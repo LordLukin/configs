@@ -1,0 +1,99 @@
+#!/bin/bash
+
+function usage()
+{
+    echo "Usage $0 mode username since [branch]"
+    echo
+    echo "  Parameters:"
+    echo "      mode - can be one of the following:"
+    echo "          diff - generates only a diff file"
+    echo "          added - copies all files created by 'user' into a temp directory in $HOME"
+    echo "          modified - copies all files modified by 'user' into a temp directory in $HOME"
+    echo "          all - generates diff and copies all files touched by 'user' into a temp directory in $HOME"
+    echo "      username - your git username"
+    echo "      since - date in a format YYYY-MM-DD"
+    echo "      branch - git branch on which you worked. By default it's origin/trunk"
+    echo
+    echo "  Example: $0 diff user 2015-01-25"
+    echo
+    echo "  This script must be ran from a git repository"
+    echo "  Script produces a diff file from commits made by user 'username' since given date 'since' until date 'until'. If 'until' is not specified actual date is used."
+    echo "  Please note that all files are copied from your current repository state. If it's not updated some files may be not actual"
+}
+
+function getDiff()
+{
+    echo "$3"
+    git log "$3" --author="$1" --since="$2" | grep "commit" | awk '{ print $2 }' | xargs git show
+}
+
+function getListOfFilesWithStatus()
+{
+    git log "$3" --name-status --author="$1" --since="$2" | awk "/$1/,/commit/" | awk -e '/C_Test/' -e '/C_Application/' | sort -u
+}
+
+function getListOfAddedFiles()
+{
+    getListOfFilesWithStatus $1 $2 $3 | awk '$1 == "A" { print $2 }'
+}
+
+function getListOfModifiedFiles()
+{
+    getListOfFilesWithStatus $1 $2 $3 | awk '$1 == "M" { print $2 }'
+}
+
+function copyDiff()
+{
+    getDiff $2 $3 $4 > "$1/$USER.diff"
+}
+
+function copyAdded()
+{
+    addedFiles=`getListOfAddedFiles $2 $3 $4`
+    addedDir="$1/added"
+    mkdir -p "$addedDir"
+    echo "$addedFiles" | xargs -r -I {} cp {} "$addedDir"
+}
+
+function copyModified()
+{
+    modifiedFiles=`getListOfModifiedFiles $2 $3 $4`
+    modifiedDir="$1/modified"
+    mkdir -p "$modifiedDir"
+    echo "$modifiedFiles" | xargs -r -I {} cp {} "$modifiedDir"
+}
+
+if [ "$#" -lt 3 ]; then
+    usage
+    exit 1
+fi
+
+
+branch="origin/trunk"
+
+if [ ! -z "$4" ]; then
+    branch="$4"
+fi
+
+export TMPDIR="$HOME"
+dir=`mktemp -d`
+
+if [ "$1" == "diff" ]; then
+    copyDiff $dir $2 $3 $branch
+elif [ "$1" == "added" ]; then
+    copyAdded $dir $2 $3 $branch
+elif [ "$1" == "modified" ]; then
+    copyModified $dir $2 $3 $branch
+elif [ "$1" == "all" ]; then
+    copyDiff $dir $2 $3 $branch
+    copyAdded $dir $2 $3 $branch
+    copyModified $dir $2 $3 $branch
+else
+    echo "mode parameter incorrect"
+    echo
+    usage
+    rm -rf "$dir"
+    exit 1
+fi
+
+echo "Files has been saved into $dir"
