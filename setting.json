@@ -1,0 +1,39 @@
+# VSC config
+{
+    "workbench.tree.indent": 24,
+    "editor.renderWhitespace": "all",
+    "window.zoomLevel": 0,
+    "cmake.configureOnOpen": true,
+    "editor.minimap.enabled": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "liveshare.codeLens": false,
+    "breadcrumbs.enabled": false,
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.shell.osx": "/bin/bash",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools"
+    },
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: Chromium, UseTab: Never, IndentWidth: 4, TabWidth: 4, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, ColumnLimit: 0, AccessModifierOffset: -4 }",
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Chromium, UseTab: Never, IndentWidth: 4, TabWidth: 4, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, ColumnLimit: 0, AccessModifierOffset: -4 }",
+    "editor.multiCursorModifier": "alt",
+    "liveshare.allowInvites": "all",
+    "liveshare.anonymousGuestApproval": "accept",
+    "cSpell.language": "en,pl",
+    "cSpell.userWords": [
+        "cbegin",
+        "cend",
+        "cout",
+        "crbegin",
+        "crend",
+        "forka",
+        "inicjalizacji",
+        "iteratory",
+        "nullptr",
+        "rbegin"
+    ],
+    "markdownlint.config": {
+        "MD033": false
+    }
+}
